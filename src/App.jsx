@@ -1,14 +1,65 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+
 import './App.css'
 
+import search from './assets/icons/search.svg'
+
+import {BackgroundLayout,WeatherCard,MiniCard} from './components/'
+import { UseWeatherData } from './contexts/WeatherDataContext'
+
+
 function App() {
-  const [count, setCount] = useState(0)
+
+  const [input, setInput] = useState('')
+  const { weather, thisLocation, values, place, setPlace } = UseWeatherData()
+
+  const submitCity = () => {
+    setPlace(input)
+    setInput('')
+  }
 
   return (
     <>
-      
+      <div className='w-full h-screen text-white px-8'>
+        <nav className='w-full p-3 flex justify-center items-center'>
+          
+          <div className='bg-white w-[25rem] overflow-hidden shadow-2xl rounded flex items-center p-2 gap-2'>
+            <img src={search} alt="search" className='w-[1.5rem] h-[1.5rem]' />
+            <input onKeyUp={(e) => {
+              if (e.key === 'Enter') {
+                submitCity()
+              }
+            }} type="text" placeholder='Search city' className='focus:outline-none w-full text-[#212121] text-lg' value={input} onChange={e => setInput(e.target.value)} />
+          </div>
+        </nav>
+        <BackgroundLayout></BackgroundLayout>
+        <main className='w-full flex flex-wrap gap-8 py-4 px-[10%] items-center justify-center'>
+          <WeatherCard
+            place={thisLocation}
+            windspeed={weather.wspd}
+            humidity={weather.humidity}
+            temperature={weather.temp}
+            heatIndex={weather.heatindex}
+            visibility={weather.visibility}
+            iconString={weather.conditions}
+            conditions={weather.conditions}
+          />
+          <div className='flex justify-center gap-8 flex-wrap w-[60%]'>
+            {
+              values?.slice(1, 7).map(curr => {
+                return (
+                  <MiniCard
+                    key={curr.datetime}
+                    time={curr.datetime}
+                    temp={curr.temp}
+                    iconString={curr.conditions}
+                  />
+                )
+              })
+            }
+          </div>
+        </main>
+      </div>
     </>
   )
 }
